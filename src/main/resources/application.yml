@@ -1,0 +1,61 @@
+server:
+  port: 8091
+spring:
+  cloud:
+    sentinel:
+      enabled: true # 确保开启Sentinel
+      filter:
+        enabled: true # 开启过滤器（一般默认是开启的，但可以显式配置）
+      # 网关相关的配置
+      scg:
+        # 如果使用的是Spring Cloud Gateway，需要配置以下属性
+        enabled: true # 开启对Spring Cloud Gateway的支持
+  redis:
+    # 连接地址
+    host: 127.0.0.1
+    # 端口
+    port: 6379
+    # 数据库
+    database: 0
+    # 用户名，如果有
+    # username:
+    # 密码，如果有
+    password:
+    # 连接超时
+    connect-timeout: 5s
+    # 读超时
+    timeout: 5s
+
+    # Lettuce 客户端的配置
+    lettuce:
+      # 连接池配置
+      pool:
+        # 最小空闲连接
+        min-idle: 0
+        # 最大空闲连接
+        max-idle: 8
+        # 最大活跃连接
+        max-active: 8
+        # 从连接池获取连接 最大超时时间，小于等于0则表示不会超时
+        max-wait: -1ms
+
+# application.properties
+#spel:
+#  locator:
+#    packages: team.nebula.framework.utils
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.springframework.cloud.gateway: DEBUG
+    indi.lcdzzz: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+zautumn:
+  application:
+    alias: API网关服务端
+    name: gateway-api-server
+    group: lcdzzz
+
