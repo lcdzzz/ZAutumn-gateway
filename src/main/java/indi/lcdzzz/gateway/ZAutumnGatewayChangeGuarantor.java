@@ -1,6 +1,8 @@
 package indi.lcdzzz.gateway;
 
+import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import indi.lcdzzz.gateway.route.DynamicRouteDefinitionLocator;
+import indi.lcdzzz.gateway.sentinel.RedisSentinelRouteDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -28,15 +30,18 @@ public class ZAutumnGatewayChangeGuarantor implements ApplicationListener<Applic
 
     private final DynamicRouteDefinitionLocator routeLocator;
     private final ReactiveStringRedisTemplate redisTemplate;
+    private final RedisSentinelRouteDataSource sentinelDataSource;
+
     // 使用双时间戳机制
     private volatile long lastCheckVersion = -1;
     private volatile long lastChangeTimestamp = -1;
 
     private ScheduledExecutorService scheduler;
 
-    public ZAutumnGatewayChangeGuarantor(DynamicRouteDefinitionLocator routeLocator, ReactiveStringRedisTemplate redisTemplate) {
+    public ZAutumnGatewayChangeGuarantor(DynamicRouteDefinitionLocator routeLocator, ReactiveStringRedisTemplate redisTemplate, RedisSentinelRouteDataSource sentinelDataSource) {
         this.routeLocator = routeLocator;
         this.redisTemplate = redisTemplate;
+        this.sentinelDataSource = sentinelDataSource;
     }
 
     public void init() {
@@ -46,6 +51,7 @@ public class ZAutumnGatewayChangeGuarantor implements ApplicationListener<Applic
             logger.info("初始网关配置信息版本号: {}", version);
         });
         // 注册Sentinel限流规则变更监听器
+        GatewayRuleManager.register2Property(sentinelDataSource.getProperty());
         // 立即刷新路由和限流信息
         updateAll().subscribe();
         // 双重监控机制
@@ -129,7 +135,8 @@ public class ZAutumnGatewayChangeGuarantor implements ApplicationListener<Applic
         // 任务1 刷新路由信息
         Mono<Void> task1 = routeLocator.refreshCache();
         // 任务2 刷新限流信息
-        return task1;
+        Mono<Void> task2 = sentinelDataSource.update();
+        return task1.and(task2);
     }
 
     @Override
