@@ -49,6 +49,7 @@ logging:
     root: INFO
     org.springframework: INFO
     org.springframework.cloud.gateway: DEBUG
+    org.springframework.web.server.adapter: DEBUG
     indi.lcdzzz: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
@@ -58,4 +59,6 @@ zautumn:
     alias: API网关服务端
     name: gateway-api-server
     group: lcdzzz
-
+  gateway:
+    log-filter:
+      enabled: true
