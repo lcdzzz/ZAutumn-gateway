@@ -48,8 +48,8 @@ logging:
   level:
     root: INFO
     org.springframework: INFO
-    org.springframework.cloud.gateway: DEBUG
-    org.springframework.web.server.adapter: DEBUG
+    org.springframework.cloud.gateway: INFO
+    org.springframework.web.server.adapter: INFO
     indi.lcdzzz: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
