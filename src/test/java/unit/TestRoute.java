@@ -2,6 +2,7 @@ package unit;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
+import indi.lcdzzz.ApplicationMain;
 import indi.lcdzzz.gateway.utils.Pair;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,7 @@ import indi.lcdzzz.gateway.ZAutumnGatewayUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest(classes = TestRoute.StartUp.class)
-@ImportAutoConfiguration(classes = RedisReactiveAutoConfiguration.class)
+@SpringBootTest(classes = ApplicationMain.class)
 public class TestRoute {
 
     @Autowired
@@ -128,10 +128,4 @@ public class TestRoute {
         redisTemplate.convertAndSend(ZAutumnGatewayUtils.getChannelKey(), "测试更新信息").block();
     }
 
-    @SpringBootApplication
-    public static class StartUp {
-        public static void main(String[] args) {
-            SpringApplication.run(StartUp.class);
-        }
-    }
 }
