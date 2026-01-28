@@ -1,31 +1,32 @@
 package indi.lcdzzz.gateway.utils;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 
+@Component
 public class Applications {
-    private static final InnerUtil INNER_UTIL = new InnerUtil();
+    private static String name;
+    private static String group;
 
-    public Applications() {
+    @Value("${zautumn.application.name:}")
+    private String instanceName;
+
+    @Value("${zautumn.application.group:}")
+    private String instanceGroup;
+
+    @PostConstruct
+    public void init() {
+        name = instanceName;
+        group = instanceGroup;
     }
 
     public static String getName() {
-        return INNER_UTIL.name;
+        return name;
     }
 
     public static String getGroup() {
-        return INNER_UTIL.group;
-    }
-
-
-    private static class InnerUtil {
-        @Value("${zautumn.application.name:}")
-        public String name;
-        @Value("${zautumn.application.group:}")
-        public String group;
-
-        private InnerUtil() {
-        }
-
+        return group;
     }
 }
