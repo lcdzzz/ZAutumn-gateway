@@ -3,6 +3,7 @@ package indi.lcdzzz.gateway;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
 import indi.lcdzzz.gateway.route.DynamicRouteDefinitionLocator;
 import indi.lcdzzz.gateway.sentinel.RedisSentinelRouteDataSource;
+import indi.lcdzzz.gateway.utils.ZAutumnGatewayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -17,7 +18,6 @@ import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 
 /**
@@ -91,22 +91,22 @@ public class ZAutumnGatewayChangeGuarantor implements ApplicationListener<Applic
         Disposable subscribe = redisTemplate.listenToChannel(ZAutumnGatewayUtils.getChannelKey())
                 .doOnNext(message -> {
                     logger.info("收到实时变更通知: {}", message);
-                    getCurrentVersion().subscribe(new Consumer<Long>() {
-                        @Override
-                        public void accept(Long currentVersion) {
-                            // 更新版本号
-                            logger.info("网关配置版本变更 ({}->{})", lastCheckVersion, currentVersion);
-                            lastCheckVersion = currentVersion;
-                            lastChangeTimestamp = System.currentTimeMillis();
+                    getCurrentVersion().subscribe(currentVersion -> {
+                        // 更新版本号
+                        logger.info("网关配置版本变更 ({}->{})", lastCheckVersion, currentVersion);
+                        lastCheckVersion = currentVersion;
+                        lastChangeTimestamp = System.currentTimeMillis();
 
-                            try {
-                                // 立即刷新路由信息和限流信息
-                                ZAutumnGatewayChangeGuarantor.this.updateAll().subscribe();
-                            } catch (Exception e) {
-                                logger.error("刷新路由信息发生异常！", e);
-                            }
-
+                        try {
+                            // 立即刷新路由信息和限流信息
+                            ZAutumnGatewayChangeGuarantor.this.updateAll()
+                                    .doOnSuccess(unused -> logger.info("路由刷新成功"))
+                                    .doOnError(e -> logger.error("路由刷新失败", e)) // 至少记录错误日志
+                                    .subscribe();
+                        } catch (Exception e) {
+                            logger.error("刷新路由信息发生异常！", e);
                         }
+
                     });
                 })
                 .subscribe();

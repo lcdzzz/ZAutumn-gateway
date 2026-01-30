@@ -3,6 +3,7 @@ package indi.lcdzzz.gateway.route;
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
+import indi.lcdzzz.gateway.utils.ZAutumnGatewayUtils;
 import indi.lcdzzz.gateway.utils.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,12 +14,9 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import indi.lcdzzz.gateway.ZAutumnGatewayUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Predicate;
 
 
 /**
@@ -60,39 +58,43 @@ public class RedisRouteDefinitionRepository implements RouteDefinitionRepository
     // 刷新路由（对外提供手动刷新接口）   redisTemplate.opsForHash().entries(zautumnGatewayUtils.getRouteKey()).collectList().block()
     public Mono<Void> refreshRoutes() {
         return redisTemplate.opsForHash().entries(ZAutumnGatewayUtils.getRouteKey()).flatMap(entry -> {
-            String routeId = (String) entry.getKey();
-            List<RouteDefinition> jsonArray = JSONArray.parseArray((String) entry.getValue(), RouteDefinition.class);
-            List<Pair<String, RouteDefinition>> values = new ArrayList<>(jsonArray.size());
-            for (RouteDefinition route : jsonArray) {
-                values.add(Pair.of(routeId, route));
-            }
-            return Flux.fromIterable(values);
-        }).filter(new Predicate<Pair<String, RouteDefinition>>() {
-            @Override
-            public boolean test(Pair<String, RouteDefinition> pair) {
-                if (null == pair.v) {
-                    logger.warn("跳过空的路由配置，请检查缓存中是否存在废弃数据！");
-                    return false;
-                } else if (StringUtils.isBlank(pair.v.getId()) || null == pair.v.getUri()) {
-                    logger.warn("跳过错误的路由配置，请检查缓存中是否存在废弃数据，路由ID：{}，内容：{}", pair.k, pair.v);
-                    return false;
-                } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("检测到路由规则，路由ID：{}，内容：{}", pair.k, pair.v);
+                    String routeId = (String) entry.getKey();
+                    List<RouteDefinition> jsonArray = JSONArray.parseArray((String) entry.getValue(), RouteDefinition.class);
+                    List<Pair<String, RouteDefinition>> values = new ArrayList<>(jsonArray.size());
+                    for (RouteDefinition route : jsonArray) {
+                        values.add(Pair.of(routeId, route));
                     }
-                    return true;
-                }
-            }
-        }).collectList().doOnNext(routes -> {
-            lock.lock();
-            try {
-                cachedRoutes = routes;
-                logger.info("路由缓存已刷新，共加载 {} 条路由", cachedRoutes.size());
-            } finally {
-                lock.unlock();
-            }
+                    return Flux.fromIterable(values);
+                })
+                .filter(pair -> validateRouteDefinition(pair))
+                .collectList()
+                .doOnNext(routes -> updateCache(routes))
+                .then();
+    }
 
-        }).then();
+    private void updateCache(List<Pair<String, RouteDefinition>> routes) {
+        lock.lock();
+        try {
+            cachedRoutes = routes;
+            logger.info("路由缓存已刷新，共加载 {} 条路由", cachedRoutes.size());
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private static boolean validateRouteDefinition(Pair<String, RouteDefinition> pair) {
+        if (null == pair.v) {
+            logger.warn("跳过空的路由配置，请检查缓存中是否存在废弃数据！");
+            return false;
+        } else if (StringUtils.isBlank(pair.v.getId()) || null == pair.v.getUri()) {
+            logger.warn("跳过错误的路由配置，请检查缓存中是否存在废弃数据，路由ID：{}，内容：{}", pair.k, pair.v);
+            return false;
+        } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("检测到路由规则，路由ID：{}，内容：{}", pair.k, pair.v);
+            }
+            return true;
+        }
     }
 
 }

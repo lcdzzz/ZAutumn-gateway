@@ -7,16 +7,12 @@ import indi.lcdzzz.gateway.utils.Pair;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import reactor.core.publisher.Flux;
 
-import indi.lcdzzz.gateway.ZAutumnGatewayUtils;
+import indi.lcdzzz.gateway.utils.ZAutumnGatewayUtils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,5 @@
-package indi.lcdzzz.gateway;
+package indi.lcdzzz.gateway.utils;
 
-
-import indi.lcdzzz.gateway.utils.Applications;
 
 public class ZAutumnGatewayUtils {
     /**

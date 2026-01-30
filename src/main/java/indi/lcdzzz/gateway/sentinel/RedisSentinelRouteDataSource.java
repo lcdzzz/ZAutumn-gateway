@@ -3,7 +3,7 @@ package indi.lcdzzz.gateway.sentinel;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.datasource.AbstractDataSource;
 import com.alibaba.fastjson.JSONArray;
-import indi.lcdzzz.gateway.ZAutumnGatewayUtils;
+import indi.lcdzzz.gateway.utils.ZAutumnGatewayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
