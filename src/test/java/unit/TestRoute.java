@@ -6,6 +6,7 @@ import indi.lcdzzz.ApplicationMain;
 import indi.lcdzzz.gateway.utils.Pair;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.gateway.route.RouteDefinition;
@@ -17,7 +18,12 @@ import indi.lcdzzz.gateway.utils.ZAutumnGatewayUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest(classes = ApplicationMain.class)
+@Tag("integration")
+@SpringBootTest(classes = ApplicationMain.class, properties = {
+        "zautumn.application.name=zautumn-integration", "zautumn.application.group=test",
+        "spring.redis.host=${TEST_REDIS_HOST:127.0.0.1}", "spring.redis.port=${TEST_REDIS_PORT:16379}",
+        "spring.redis.password=${TEST_REDIS_PASSWORD:}"
+})
 public class TestRoute {
 
     @Autowired
