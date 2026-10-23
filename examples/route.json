@@ -1,0 +1,12 @@
+[
+  {
+    "id": "demo-route",
+    "uri": "http://127.0.0.1:18080",
+    "predicates": [
+      {"name": "Path", "args": {"pattern": "/demo/**"}},
+      {"name": "Method", "args": {"methods": "GET"}}
+    ],
+    "filters": [{"name": "StripPrefix", "args": {"parts": "1"}}],
+    "order": 0
+  }
+]

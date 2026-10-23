@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability / 安全漏洞
+    url: https://github.com/lcdzzz/ZAutumn-gateway/blob/master/SECURITY.md
+    about: 请使用安全政策中的私密报告渠道，不要公开漏洞细节。

@@ -1,0 +1,31 @@
+name: Bug report / 缺陷反馈
+description: 报告可复现的问题（安全漏洞请使用 SECURITY.md 中的私密渠道）
+title: "[Bug]: "
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: 环境与版本
+      description: 提交 SHA、JDK、Maven、Redis、操作系统及脱敏配置。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 最小复现步骤
+      description: 请提供脱敏后的路由或限流 JSON 及执行命令。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期行为
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为与脱敏日志
+      description: 不要上传密码、令牌、个人数据或未公开漏洞利用细节。
+    validations:
+      required: true

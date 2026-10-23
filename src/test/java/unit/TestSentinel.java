@@ -6,11 +6,17 @@ import com.alibaba.fastjson2.JSONArray;
 import indi.lcdzzz.ApplicationMain;
 import indi.lcdzzz.gateway.utils.ZAutumnGatewayUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 
-@SpringBootTest(classes = ApplicationMain.class)
+@Tag("integration")
+@SpringBootTest(classes = ApplicationMain.class, properties = {
+        "zautumn.application.name=zautumn-integration", "zautumn.application.group=test",
+        "spring.redis.host=${TEST_REDIS_HOST:127.0.0.1}", "spring.redis.port=${TEST_REDIS_PORT:16379}",
+        "spring.redis.password=${TEST_REDIS_PASSWORD:}"
+})
 
 public class TestSentinel {
 

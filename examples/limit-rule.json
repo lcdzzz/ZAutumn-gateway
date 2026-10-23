@@ -1,0 +1,10 @@
+[
+  {
+    "resource": "demo-route",
+    "resourceMode": 0,
+    "grade": 1,
+    "count": 10,
+    "intervalSec": 1,
+    "controlBehavior": 0
+  }
+]
